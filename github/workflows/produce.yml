@@ -65,3 +65,5 @@ jobs:
           else
             echo "No new changes. Skipping commit."
           fi
+# إنشاء ملف robots.txt فارغ لضمان تحديث النشر
+touch robots.txt
