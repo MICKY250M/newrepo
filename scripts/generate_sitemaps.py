@@ -49,7 +49,7 @@ def generate_sitemaps():
 def create_sitemap_content(post_paths: list, sitemap_name: str) -> str:
     """تنشئ محتوى XML لخريطة موقع فردية."""
     # **تعديل: يجب استبدال هذا برابط مدونتك الحقيقي**
-    BASE_URL = "https://MICKY250M.github.io/your-repo-name" 
+    BASE_URL = "https://MICKY250M.github.io/newrepo" 
     
     # تنسيق الوقت ليكون متوافقًا مع XML
     now = datetime.now().isoformat(timespec='seconds') + "+00:00"
@@ -80,7 +80,7 @@ def create_sitemap_content(post_paths: list, sitemap_name: str) -> str:
 def create_sitemap_index(sitemap_files: list):
     """تنشئ ملف فهرس خرائط الموقع (Sitemap Index)."""
     # **تعديل: يجب استبدال هذا برابط مدونتك الحقيقي**
-    BASE_URL = "https://MICKY250M.github.io/your-repo-name"
+    BASE_URL = "https://MICKY250M.github.io/newrepo"
     now = datetime.now().isoformat(timespec='seconds') + "+00:00"
 
     xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
