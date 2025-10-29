@@ -1,5 +1,6 @@
 import os
 import glob
+import json # تم إضافة مكتبة JSON
 from slugify import slugify
 from datetime import datetime
 
@@ -7,51 +8,44 @@ from datetime import datetime
 OUTPUT_DIR = 'posts'
 SITEMAP_INDEX_FILE = 'sitemap_index.xml'
 SITEMAP_BASE_NAME = 'sitemap'
-POSTS_PER_SITEMAP = 1000  # الحد الأقصى المسموح به في خريطة موقع واحدة
+POSTS_PER_SITEMAP = 1000  
 
 def generate_sitemaps():
     """
-    يجد جميع ملفات Markdown في مجلد posts وينشئ خرائط الموقع (Sitemaps)
-    وملف فهرس خرائط الموقع (Sitemap Index).
+    يجد جميع ملفات Markdown وينشئ خرائط الموقع وملف فهرس JSON.
     """
-    print("Starting sitemap generation...")
+    print("Starting sitemap and JSON index generation...")
     
-    # العثور على جميع ملفات المقالات
-    # يحدد المسار إلى ملفات Markdown داخل مجلد posts
     post_files = sorted(glob.glob(os.path.join(OUTPUT_DIR, '*.md')))
     if not post_files:
-        print("No articles found in the posts directory. Skipping sitemap generation.")
+        print("No articles found in the posts directory. Skipping generation.")
         return
 
     sitemap_files = []
     
-    # تقسيم المقالات إلى مجموعات
     for i, start_index in enumerate(range(0, len(post_files), POSTS_PER_SITEMAP)):
         sitemap_posts = post_files[start_index:start_index + POSTS_PER_SITEMAP]
         sitemap_name = f"{SITEMAP_BASE_NAME}_{i+1}.xml"
         sitemap_files.append(sitemap_name)
         
-        # توليد محتوى خريطة الموقع الفردية
         sitemap_content = create_sitemap_content(sitemap_posts, sitemap_name)
         
-        # حفظ الملف في جذر المستودع
         with open(sitemap_name, 'w', encoding='utf-8') as f:
             f.write(sitemap_content)
         
         print(f"Generated {sitemap_name} with {len(sitemap_posts)} URLs.")
 
-    # توليد ملف فهرس خرائط الموقع
     create_sitemap_index(sitemap_files)
-    
-    print("Sitemap generation complete.")
+    generate_json_index(post_files) # استدعاء الدالة الجديدة
+
+    print("Generation complete.")
 
 
 def create_sitemap_content(post_paths: list, sitemap_name: str) -> str:
     """تنشئ محتوى XML لخريطة موقع فردية."""
-    # **تعديل: يجب استبدال هذا برابط مدونتك الحقيقي**
+    # يجب استبدال هذا برابط مدونتك الحقيقي
     BASE_URL = "https://MICKY250M.github.io/newrepo" 
     
-    # تنسيق الوقت ليكون متوافقًا مع XML
     now = datetime.now().isoformat(timespec='seconds') + "+00:00"
     
     xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -59,10 +53,7 @@ def create_sitemap_content(post_paths: list, sitemap_name: str) -> str:
 """
     
     for path in post_paths:
-        # استخراج اسم الملف بدون المسار والامتداد (مثال: 0001-productivity)
         file_name = os.path.basename(path).replace('.md', '')
-        
-        # افتراض أن رابط المقال سيكون: BASE_URL/posts/file_name/
         url = f"{BASE_URL}/posts/{file_name}/" 
         
         xml_content += f"""  <url>
@@ -79,7 +70,6 @@ def create_sitemap_content(post_paths: list, sitemap_name: str) -> str:
 
 def create_sitemap_index(sitemap_files: list):
     """تنشئ ملف فهرس خرائط الموقع (Sitemap Index)."""
-    # **تعديل: يجب استبدال هذا برابط مدونتك الحقيقي**
     BASE_URL = "https://MICKY250M.github.io/newrepo"
     now = datetime.now().isoformat(timespec='seconds') + "+00:00"
 
@@ -101,6 +91,28 @@ def create_sitemap_index(sitemap_files: list):
         f.write(xml_content)
     
     print(f"Generated {SITEMAP_INDEX_FILE}.")
+
+
+def generate_json_index(post_paths: list):
+    """تنشئ ملف JSON يحتوي على قائمة المقالات وعناوينها."""
+    index_data = []
+    
+    for path in post_paths:
+        file_name = os.path.basename(path)
+        # استخراج العنوان الجميل من اسم الملف
+        title_raw = file_name.replace(/(\d{4}-|-)|\.md/g, ' ').trim()
+        title = ' '.join(title_raw.split()).title() # تنسيق العنوان (حرف كبير لكل كلمة)
+
+        index_data.append({
+            "fileName": file_name,
+            "title": title
+        })
+
+    with open('index.json', 'w', encoding='utf-8') as f:
+        json.dump(index_data, f, ensure_ascii=False, indent=4)
+
+    print("Generated index.json successfully.")
+
 
 if __name__ == '__main__':
     generate_sitemaps()
