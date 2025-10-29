@@ -18,7 +18,7 @@
         /* الشريط الجانبي (قائمة المقالات) */
         #sidebar {
             width: 280px;
-            background-color: #34495e; /* أزرق داكن */
+            background-color: #34495e; 
             color: white;
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -30,7 +30,7 @@
         }
         #sidebar h2 {
             text-align: center;
-            border-bottom: 2px solid #2ecc71; /* شريط أخضر */
+            border-bottom: 2px solid #2ecc71; 
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
@@ -39,7 +39,7 @@
             padding: 0;
         }
         #article-list li a {
-            color: #ecf0f1; /* رمادي فاتح */
+            color: #ecf0f1; 
             text-decoration: none;
             display: block;
             padding: 10px 0;
@@ -53,7 +53,7 @@
 
         /* منطقة عرض المحتوى الرئيسية */
         #content-area {
-            margin-right: 280px; /* لإفساح المجال للشريط الجانبي */
+            margin-right: 280px; 
             padding: 30px;
             flex-grow: 1;
             background-color: white;
@@ -121,55 +121,35 @@
             const articleList = document.getElementById('article-list');
             const welcomeDiv = document.getElementById('welcome');
             const articleView = document.getElementById('article-view');
-            const postsDir = './posts/'; // المسار إلى مجلد المقالات
+            const postsDir = './posts/'; 
 
-            // دالة لجلب قائمة الملفات من مجلد posts
+            // دالة لجلب قائمة المقالات من ملف index.json
             async function fetchArticleIndex() {
                 try {
-                    // نعتمد على أن مجلد posts/ موجود
-                    const response = await fetch(postsDir);
-                    const html = await response.text();
+                    // *** التعديل: جلب ملف index.json بدلاً من محاولة قراءة المجلد ***
+                    const response = await fetch('index.json'); 
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch index.json. Did the workflow run?");
+                    }
+                    const articleFiles = await response.json(); // قراءة الملف كـ JSON
                     
-                    // تحليل HTML (هذه الطريقة تعمل في معظم بيئات GitHub Pages البسيطة)
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    // جلب كل الروابط (عادةً تكون ملفات Markdown)
-                    const links = doc.querySelectorAll('a');
-                    const articleFiles = [];
-
-                    links.forEach(link => {
-                        const href = link.getAttribute('href');
-                        // تصفية الروابط التي تنتهي بـ .md وتستثني .gitkeep
-                        if (href && href.endsWith('.md') && href !== '.gitkeep') {
-                            articleFiles.push(href);
-                        }
-                    });
-
-                    // إذا لم يتم العثور على مقالات، نعرض رسالة خطأ
                     if (articleFiles.length === 0) {
-                        articleList.innerHTML = '<li>لا توجد مقالات للعرض.</li>';
+                        articleList.innerHTML = '<li>لا توجد مقالات للعرض. تأكد من أن ملف index.json غير فارغ.</li>';
                         return;
                     }
 
-                    // ترتيب وعرض القائمة
-                    articleFiles.sort(); // ترتيب أبجدي أو رقمي (0001, 0002, ...)
-                    articleFiles.forEach(fileName => {
+                    articleFiles.forEach(article => {
                         const listItem = document.createElement('li');
-                        // استخراج العنوان الجميل من اسم الملف
-                        let title = fileName.replace(/(\d{4}-|-)|\.md/g, ' ').trim();
-                        title = title.replace(/\s\s+/g, ' '); // إزالة المسافات المتعددة
 
                         const link = document.createElement('a');
                         link.href = '#';
-                        link.textContent = title;
-                        link.dataset.file = fileName;
+                        // استخدام العنوان الجميل الذي تم توليده في Python
+                        link.textContent = article.title; 
+                        link.dataset.file = article.fileName;
                         
-                        // ربط حدث النقر بتحميل المقال
                         link.addEventListener('click', (e) => {
                             e.preventDefault();
-                            loadArticle(fileName);
-                            // تمييز المقال النشط
+                            loadArticle(article.fileName);
                             document.querySelectorAll('#article-list a').forEach(a => a.style.fontWeight = 'normal');
                             e.target.style.fontWeight = 'bold';
                         });
@@ -178,14 +158,8 @@
                         articleList.appendChild(listItem);
                     });
 
-                    // تحميل المقال الأول تلقائيًا (اختياري)
-                    if (articleFiles.length > 0) {
-                        // loadArticle(articleFiles[0]);
-                        // articleList.querySelector('a').style.fontWeight = 'bold';
-                    }
-
                 } catch (error) {
-                    articleList.innerHTML = '<li>حدث خطأ في جلب قائمة المقالات. تأكد من إعداد GitHub Pages بشكل صحيح.</li>';
+                    articleList.innerHTML = '<li>حدث خطأ في جلب قائمة المقالات. (تأكد من نجاح الـWorkflow وتوليد index.json)</li>';
                     console.error("Error fetching article index:", error);
                 }
             }
@@ -202,10 +176,8 @@
                     
                     const markdownText = await response.text();
                     
-                    // تحويل Markdown إلى HTML وعرضه
                     articleView.innerHTML = marked.parse(markdownText);
                     
-                    // التمرير لأعلى الصفحة
                     window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 } catch (error) {
