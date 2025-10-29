@@ -56,6 +56,7 @@ jobs:
           git add sitemap_*.xml
           git add sitemap_index.xml
 
+
           # 4. التحقق من وجود تغييرات لـ Commit
           # إذا كان هناك فرق (تغيير)، قم بالـ commit والـ push
           if git status --porcelain | grep -q .; then
