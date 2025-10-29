@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدونتي الموسوعية - الرئيسية</title>
+    <style>
+        /* الخطوط والألوان الأساسية */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+        /* الشريط الجانبي (قائمة المقالات) */
+        #sidebar {
+            width: 280px;
+            background-color: #34495e; /* أزرق داكن */
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            right: 0;
+        }
+        #sidebar h2 {
+            text-align: center;
+            border-bottom: 2px solid #2ecc71; /* شريط أخضر */
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        #article-list {
+            list-style: none;
+            padding: 0;
+        }
+        #article-list li a {
+            color: #ecf0f1; /* رمادي فاتح */
+            text-decoration: none;
+            display: block;
+            padding: 10px 0;
+            border-bottom: 1px solid #4a637d;
+            transition: background-color 0.3s;
+        }
+        #article-list li a:hover {
+            background-color: #4a637d;
+            padding-right: 5px;
+        }
+
+        /* منطقة عرض المحتوى الرئيسية */
+        #content-area {
+            margin-right: 280px; /* لإفساح المجال للشريط الجانبي */
+            padding: 30px;
+            flex-grow: 1;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+        /* تنسيق المقالات (Markdown) */
+        .markdown-body h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .markdown-body h2 {
+            color: #3498db;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+        .markdown-body p, .markdown-body li {
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+        .markdown-body pre {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        
+        /* شاشة الترحيب الافتتاحية */
+        #welcome {
+            text-align: center;
+            padding: 50px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 50px;
+        }
+        #welcome h1 {
+            color: #2c3e50;
+        }
+        #welcome p {
+            color: #7f8c8d;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h2>فهرس الموسوعة</h2>
+        <ul id="article-list">
+            </ul>
+    </div>
+
+    <div id="content-area">
+        <div id="welcome">
+            <h1>أهلاً بك في المدونة الموسوعية</h1>
+            <p>هذه المدونة يتم توليدها آلياً بالكامل من ملف Word. يمكنك اختيار أي مقال من القائمة الجانبية للبدء بالقراءة.</p>
+        </div>
+        <div id="article-view" class="markdown-body" style="display:none;">
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const articleList = document.getElementById('article-list');
+            const welcomeDiv = document.getElementById('welcome');
+            const articleView = document.getElementById('article-view');
+            const postsDir = './posts/'; // المسار إلى مجلد المقالات
+
+            // دالة لجلب قائمة الملفات من مجلد posts
+            async function fetchArticleIndex() {
+                try {
+                    // نعتمد على أن مجلد posts/ موجود
+                    const response = await fetch(postsDir);
+                    const html = await response.text();
+                    
+                    // تحليل HTML (هذه الطريقة تعمل في معظم بيئات GitHub Pages البسيطة)
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // جلب كل الروابط (عادةً تكون ملفات Markdown)
+                    const links = doc.querySelectorAll('a');
+                    const articleFiles = [];
+
+                    links.forEach(link => {
+                        const href = link.getAttribute('href');
+                        // تصفية الروابط التي تنتهي بـ .md وتستثني .gitkeep
+                        if (href && href.endsWith('.md') && href !== '.gitkeep') {
+                            articleFiles.push(href);
+                        }
+                    });
+
+                    // إذا لم يتم العثور على مقالات، نعرض رسالة خطأ
+                    if (articleFiles.length === 0) {
+                        articleList.innerHTML = '<li>لا توجد مقالات للعرض.</li>';
+                        return;
+                    }
+
+                    // ترتيب وعرض القائمة
+                    articleFiles.sort(); // ترتيب أبجدي أو رقمي (0001, 0002, ...)
+                    articleFiles.forEach(fileName => {
+                        const listItem = document.createElement('li');
+                        // استخراج العنوان الجميل من اسم الملف
+                        let title = fileName.replace(/(\d{4}-|-)|\.md/g, ' ').trim();
+                        title = title.replace(/\s\s+/g, ' '); // إزالة المسافات المتعددة
+
+                        const link = document.createElement('a');
+                        link.href = '#';
+                        link.textContent = title;
+                        link.dataset.file = fileName;
+                        
+                        // ربط حدث النقر بتحميل المقال
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            loadArticle(fileName);
+                            // تمييز المقال النشط
+                            document.querySelectorAll('#article-list a').forEach(a => a.style.fontWeight = 'normal');
+                            e.target.style.fontWeight = 'bold';
+                        });
+
+                        listItem.appendChild(link);
+                        articleList.appendChild(listItem);
+                    });
+
+                    // تحميل المقال الأول تلقائيًا (اختياري)
+                    if (articleFiles.length > 0) {
+                        // loadArticle(articleFiles[0]);
+                        // articleList.querySelector('a').style.fontWeight = 'bold';
+                    }
+
+                } catch (error) {
+                    articleList.innerHTML = '<li>حدث خطأ في جلب قائمة المقالات. تأكد من إعداد GitHub Pages بشكل صحيح.</li>';
+                    console.error("Error fetching article index:", error);
+                }
+            }
+
+            // دالة لتحميل وعرض ملف Markdown
+            async function loadArticle(fileName) {
+                welcomeDiv.style.display = 'none';
+                articleView.style.display = 'block';
+                articleView.innerHTML = '<h2>جار التحميل...</h2>';
+
+                try {
+                    const response = await fetch(postsDir + fileName);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const markdownText = await response.text();
+                    
+                    // تحويل Markdown إلى HTML وعرضه
+                    articleView.innerHTML = marked.parse(markdownText);
+                    
+                    // التمرير لأعلى الصفحة
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                } catch (error) {
+                    articleView.innerHTML = `<h2>خطأ في التحميل</h2><p>لم يتم العثور على المقال: ${fileName}.</p><p>تفاصيل الخطأ: ${error.message}</p>`;
+                    console.error("Error loading article:", error);
+                }
+            }
+
+            fetchArticleIndex();
+        });
+    </script>
+</body>
+</html>
