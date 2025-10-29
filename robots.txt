@@ -1,0 +1,11 @@
+User-agent: * تعني تطبيق القواعد التالية على جميع محركات البحث (جوجل، بينج، إلخ)
+
+User-agent: *
+
+Disallow: لا يوجد هنا أي محتوى محظور، مما يسمح بالزحف لكل الصفحات
+
+Disallow:
+
+Sitemap: هذا يوجه محركات البحث مباشرة إلى ملف فهرس خرائط الموقع، والذي تم توليده بواسطة الـWorkflow
+
+Sitemap: https://www.google.com/search?q=https://MICKY250M.github.io/newrepo/sitemap_index.xml
