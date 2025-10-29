@@ -1,6 +1,6 @@
 import os
 import glob
-import json # تم إضافة مكتبة JSON
+import json 
 from slugify import slugify
 from datetime import datetime
 
@@ -36,7 +36,7 @@ def generate_sitemaps():
         print(f"Generated {sitemap_name} with {len(sitemap_posts)} URLs.")
 
     create_sitemap_index(sitemap_files)
-    generate_json_index(post_files) # استدعاء الدالة الجديدة
+    generate_json_index(post_files) 
 
     print("Generation complete.")
 
@@ -100,13 +100,17 @@ def generate_json_index(post_paths: list):
     for path in post_paths:
         file_name = os.path.basename(path)
         # استخراج العنوان الجميل من اسم الملف
-        title_raw = file_name.replace(/(\d{4}-|-)|\.md/g, ' ').trim()
-        title = ' '.join(title_raw.split()).title() # تنسيق العنوان (حرف كبير لكل كلمة)
+        # تم تعديل طريقة استخراج العنوان لتكون أكثر بساطة
+        title_raw = file_name.replace('.md', '')
+        title = ' '.join(word.capitalize() for word in title_raw.split('-')[1:])
 
         index_data.append({
             "fileName": file_name,
             "title": title
         })
+    
+    # *** إضافة تاريخ التحديث لضمان التغيير في كل تشغيل ***
+    index_data.insert(0, {"updated_at": datetime.now().isoformat()})
 
     with open('index.json', 'w', encoding='utf-8') as f:
         json.dump(index_data, f, ensure_ascii=False, indent=4)
