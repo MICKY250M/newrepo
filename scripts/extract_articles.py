@@ -44,7 +44,7 @@ def extract_articles(doc_path: str):
     # إنشاء مجلد posts إذا لم يكن موجوداً
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    # *** حل مشكلة عدم ظهور المجلد: إنشاء ملف .gitkeep ***
+    # حل مشكلة عدم ظهور المجلد: إنشاء ملف .gitkeep
     pathlib.Path(os.path.join(OUTPUT_DIR, '.gitkeep')).touch()
     
     current_article = []
@@ -102,7 +102,8 @@ def save_article(title: str, content: list, count: int):
     """
     يحفظ محتوى المقال في ملف Markdown.
     """
-    file_slug = slugify(title, to_lower=True, max_length=50)
+    # *** التعديل لحل مشكلة TypeError: تمت إزالة to_lower=True ***
+    file_slug = slugify(title, max_length=50) 
     file_name = f"{count:04d}-{file_slug}.md"
     file_path = os.path.join(OUTPUT_DIR, file_name)
 
