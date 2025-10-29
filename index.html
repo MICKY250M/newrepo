@@ -1,119 +1,207 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدونتي الموسوعية - الرئيسية</title>
+    <title>My Encyclopedia Blog - Home</title>
+    <!-- Include Google Fonts: 'Inter' for a clean, modern English font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* الخطوط والألوان الأساسية */
+        /* Base Variables */
+        :root {
+            --primary-color: #0077B6; /* Clean Blue for headers and links */
+            --secondary-color: #F8F9FA; /* Light content background */
+            --sidebar-bg: #344E5C; /* Dark sidebar background */
+            --text-dark: #212529; /* Main text color */
+            --text-light: #DEE2E6; /* Sidebar text color */
+            --accent-color: #00B4D8; /* Accent color for emphasis */
+        }
+
+        /* Base Styles */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
             margin: 0;
             padding: 0;
             display: flex;
             min-height: 100vh;
+            flex-direction: row; 
         }
-        /* الشريط الجانبي (قائمة المقالات) */
+
+        /* Desktop Layout (LTR: Sidebar on the Left) */
         #sidebar {
             width: 280px;
-            background-color: #34495e; 
-            color: white;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            background-color: var(--sidebar-bg);
+            color: var(--text-light);
+            padding: 20px 15px;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15); /* Shadow on the right side */
             overflow-y: auto;
             position: fixed;
             height: 100%;
             top: 0;
-            right: 0;
+            left: 0; /* Sidebar fixed to the left */
+            box-sizing: border-box;
         }
+
+        #content-area {
+            margin-left: 280px; /* Push content away from the left sidebar */
+            padding: 30px;
+            flex-grow: 1;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Mobile Layout (Responsive) */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+            #sidebar {
+                position: relative; 
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+                overflow-y: scroll;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            #content-area {
+                margin-left: 0; /* Reset margin on mobile */
+                padding: 15px;
+                min-height: 70vh;
+            }
+        }
+        
+        /* Sidebar Styling */
         #sidebar h2 {
+            font-weight: 700;
+            font-size: 1.4rem;
             text-align: center;
-            border-bottom: 2px solid #2ecc71; 
+            border-bottom: 2px solid var(--accent-color); 
             padding-bottom: 10px;
             margin-bottom: 20px;
+            color: white; 
         }
         #article-list {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         #article-list li a {
-            color: #ecf0f1; 
+            color: var(--text-light); 
             text-decoration: none;
             display: block;
-            padding: 10px 0;
-            border-bottom: 1px solid #4a637d;
-            transition: background-color 0.3s;
+            padding: 12px 10px;
+            margin-bottom: 4px;
+            border-radius: 5px;
+            transition: background-color 0.3s, padding-left 0.3s;
         }
         #article-list li a:hover {
-            background-color: #4a637d;
-            padding-right: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding-left: 15px; /* Slight hover animation */
+        }
+        #article-list li a[style*="font-weight: bold"] {
+            background-color: var(--primary-color);
+            color: white !important;
+        }
+        /* Error/No Articles Message */
+        #article-list li {
+            color: #FFC300; 
+            padding: 10px;
+            font-size: 0.9rem;
         }
 
-        /* منطقة عرض المحتوى الرئيسية */
-        #content-area {
-            margin-right: 280px; 
-            padding: 30px;
-            flex-grow: 1;
-            background-color: white;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
-        }
-        /* تنسيق المقالات (Markdown) */
+        /* Main Content Styling (Markdown Body) */
         .markdown-body h1 {
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
+            color: var(--primary-color);
+            font-weight: 700;
+            border-bottom: 4px solid var(--accent-color);
+            padding-bottom: 15px;
             margin-top: 0;
+            font-size: 2.2rem;
         }
         .markdown-body h2 {
-            color: #3498db;
-            border-bottom: 1px dashed #ccc;
+            color: var(--text-dark);
+            font-weight: 700;
+            border-bottom: 1px dashed #E0E0E0;
             padding-bottom: 5px;
+            margin-top: 30px;
+            font-size: 1.8rem;
         }
         .markdown-body p, .markdown-body li {
-            line-height: 1.8;
-            font-size: 1.05em;
+            line-height: 1.9;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
         }
         .markdown-body pre {
-            background-color: #ecf0f1;
+            background-color: #E9ECEF;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             overflow-x: auto;
+            color: #333;
+        }
+        .markdown-body blockquote {
+            border-left: 5px solid var(--accent-color); /* LTR border */
+            background-color: #F8F9FA;
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+        .markdown-body a {
+            color: var(--primary-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--primary-color);
+            transition: color 0.3s;
+        }
+        .markdown-body a:hover {
+            color: var(--accent-color);
         }
         
-        /* شاشة الترحيب الافتتاحية */
+        /* Welcome Screen */
         #welcome {
             text-align: center;
-            padding: 50px;
+            padding: 80px 30px;
+            background-color: var(--secondary-color);
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-top: 50px;
         }
         #welcome h1 {
-            color: #2c3e50;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            border-bottom: none;
         }
         #welcome p {
-            color: #7f8c8d;
+            color: #6C757D;
+            font-size: 1.2rem;
         }
     </style>
+    <!-- Include marked.js library for Markdown to HTML conversion -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
+    <!-- Sidebar and Article List -->
     <div id="sidebar">
-        <h2>فهرس الموسوعة</h2>
+        <h2>Article Index</h2>
         <ul id="article-list">
-            </ul>
+            <!-- This list will be populated by JavaScript -->
+        </ul>
     </div>
 
+    <!-- Content Display Area -->
     <div id="content-area">
         <div id="welcome">
-            <h1>أهلاً بك في المدونة الموسوعية</h1>
-            <p>هذه المدونة يتم توليدها آلياً بالكامل من ملف Word. يمكنك اختيار أي مقال من القائمة الجانبية للبدء بالقراءة.</p>
+            <h1>Welcome to the Automated Blog</h1>
+            <p>This blog is fully generated from a Word document. Select any article from the sidebar to start reading.</p>
         </div>
         <div id="article-view" class="markdown-body" style="display:none;">
-            </div>
+            <!-- Article content will be displayed here -->
+        </div>
     </div>
 
     <script>
@@ -123,21 +211,20 @@
             const articleView = document.getElementById('article-view');
             const postsDir = './posts/'; 
 
-            // دالة لجلب قائمة المقالات من ملف index.json
+            // Function to fetch the article list from index.json
             async function fetchArticleIndex() {
                 try {
-                    // جلب ملف index.json بدلاً من محاولة قراءة المجلد
                     const response = await fetch('index.json'); 
                     if (!response.ok) {
                         throw new Error(`Failed to fetch index.json. Status: ${response.status}`);
                     }
                     const articleFiles = await response.json(); 
 
-                    // تصفية أي عناصر ليست مقالات (مثل عنصر updated_at)
+                    // Filter out non-article entries (like updated_at timestamp)
                     const articles = articleFiles.filter(item => item.fileName);
                     
                     if (articles.length === 0) {
-                        articleList.innerHTML = '<li>لا توجد مقالات للعرض. تأكد من أن ملف index.json غير فارغ.</li>';
+                        articleList.innerHTML = '<li>No articles found.</li>';
                         return;
                     }
 
@@ -146,14 +233,16 @@
 
                         const link = document.createElement('a');
                         link.href = '#';
-                        // استخدام العنوان الجميل الذي تم توليده في Python
+                        // Use the human-readable title generated by Python
                         link.textContent = article.title; 
                         link.dataset.file = article.fileName;
                         
                         link.addEventListener('click', (e) => {
                             e.preventDefault();
                             loadArticle(article.fileName);
+                            // Remove bold styling from all links
                             document.querySelectorAll('#article-list a').forEach(a => a.style.fontWeight = 'normal');
+                            // Set the current link to bold
                             e.target.style.fontWeight = 'bold';
                         });
 
@@ -162,16 +251,16 @@
                     });
 
                 } catch (error) {
-                    articleList.innerHTML = '<li>حدث خطأ في جلب قائمة المقالات. (تأكد من نجاح الـWorkflow وتوليد index.json)</li>';
+                    articleList.innerHTML = '<li>Error loading articles. Check the Workflow status.</li>';
                     console.error("Error fetching article index:", error);
                 }
             }
 
-            // دالة لتحميل وعرض ملف Markdown
+            // Function to load and display the Markdown file
             async function loadArticle(fileName) {
                 welcomeDiv.style.display = 'none';
                 articleView.style.display = 'block';
-                articleView.innerHTML = '<h2>جار التحميل...</h2>';
+                articleView.innerHTML = '<h2 style="text-align:center;">Loading Article...</h2>';
 
                 try {
                     const response = await fetch(postsDir + fileName);
@@ -179,12 +268,13 @@
                     
                     const markdownText = await response.text();
                     
+                    // Convert Markdown to HTML and display
                     articleView.innerHTML = marked.parse(markdownText);
                     
                     window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 } catch (error) {
-                    articleView.innerHTML = `<h2>خطأ في التحميل</h2><p>لم يتم العثور على المقال: ${fileName}.</p><p>تفاصيل الخطأ: ${error.message}</p>`;
+                    articleView.innerHTML = `<h2 style="color:red;">Error Loading</h2><p>Article not found: ${fileName}.</p>`;
                     console.error("Error loading article:", error);
                 }
             }
