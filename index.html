@@ -9,23 +9,43 @@
     <meta name="description" content="A comprehensive collection of automated articles and encyclopedic entries. Content is managed efficiently via an automatic GitHub Workflow from a single Word document.">
     <meta name="keywords" content="encyclopedia, automated blog, github pages, markdown, technical articles, general knowledge">
 
-    <!-- ************* Google Search Console Verification (CORRECTED CODE) ************* -->
+    <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="LLPATPA9brfgCtQCZMtJUTjirTWXWR0Cug7vBjoL1WE" /> 
-    <!-- ****************************************************************************** -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Base Variables */
+        /* Base Variables - LIGHT MODE */
         :root {
-            --primary-color: #0077B6; /* Clean Blue for headers and links */
-            --secondary-color: #F8F9FA; /* Light content background */
-            --sidebar-bg: #344E5C; /* Dark sidebar background */
-            --text-dark: #212529; /* Main text color */
-            --text-light: #DEE2E6; /* Sidebar text color */
-            --accent-color: #00B4D8; /* Accent color for emphasis */
+            --primary-color: #0077B6; /* Blue */
+            --secondary-color: #F8F9FA; /* Light Background */
+            --sidebar-bg: #344E5C; /* Dark Sidebar */
+            --text-dark: #212529; /* Main Text */
+            --text-light: #DEE2E6; /* Sidebar Text */
+            --accent-color: #00B4D8; /* Accent */
+            --content-bg: white; /* Content Area Background */
+            --code-bg: #E9ECEF; /* Code Block Background */
+            --welcome-bg: #F8F9FA; /* Welcome Card Background */
+            --border-color: #E0E0E0;
+        }
+
+        /* DARK MODE Overrides */
+        body.dark-mode {
+            background-color: #121212 !important; 
+        }
+        .dark-mode:root {
+            --primary-color: #4DB6AC; /* Teal for primary links */
+            --secondary-color: #121212; /* Very Dark Background */
+            --sidebar-bg: #1F1F1F; /* Darker Sidebar */
+            --text-dark: #E0E0E0; /* Light Text */
+            --text-light: #BDBDBD; /* Sidebar Text */
+            --accent-color: #4DB6AC; /* Accent Teal */
+            --content-bg: #1F1F1F; /* Dark Content Area */
+            --code-bg: #2D2D2D; /* Dark Code Block */
+            --welcome-bg: #2D2D2D; /* Dark Welcome Card */
+            --border-color: #444444;
         }
 
         /* Base Styles */
@@ -38,6 +58,7 @@
             display: flex;
             min-height: 100vh;
             flex-direction: row; 
+            transition: background-color 0.3s;
         }
 
         /* Desktop Layout (LTR: Sidebar on the Left) */
@@ -46,41 +67,28 @@
             background-color: var(--sidebar-bg);
             color: var(--text-light);
             padding: 20px 15px;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15); /* Shadow on the right side */
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15); 
             overflow-y: auto;
             position: fixed;
             height: 100%;
             top: 0;
-            left: 0; /* Sidebar fixed to the left */
+            left: 0; 
             box-sizing: border-box;
+            transition: background-color 0.3s;
         }
 
         #content-area {
-            margin-left: 280px; /* Push content away from the left sidebar */
+            margin-left: 280px; 
             padding: 30px;
             flex-grow: 1;
-            background-color: white;
+            background-color: var(--content-bg);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s;
         }
 
         /* Mobile Layout (Responsive) */
         @media (max-width: 900px) {
-            body {
-                flex-direction: column;
-            }
-            #sidebar {
-                position: relative; 
-                width: 100%;
-                height: auto;
-                max-height: 300px;
-                overflow-y: scroll;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            #content-area {
-                margin-left: 0; /* Reset margin on mobile */
-                padding: 15px;
-                min-height: 70vh;
-            }
+            #content-area { margin-left: 0; }
         }
         
         /* Sidebar Styling */
@@ -90,13 +98,29 @@
             text-align: center;
             border-bottom: 2px solid var(--accent-color); 
             padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: white; 
         }
+        
+        /* Search Input Styling */
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            font-size: 1rem;
+            color: var(--text-dark);
+            background-color: var(--content-bg);
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        /* Article List Styling */
         #article-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+             list-style: none;
+             padding: 0;
+             margin: 0;
         }
         #article-list li a {
             color: var(--text-light); 
@@ -109,7 +133,7 @@
         }
         #article-list li a:hover {
             background-color: rgba(255, 255, 255, 0.1);
-            padding-left: 15px; /* Slight hover animation */
+            padding-left: 15px;
         }
         #article-list li a[style*="font-weight: bold"] {
             background-color: var(--primary-color);
@@ -117,11 +141,11 @@
         }
         /* Error/No Articles Message */
         #article-list li {
-            color: #FFC300; 
+            color: #FFC300; /* Yellowish warning color */
             padding: 10px;
             font-size: 0.9rem;
         }
-
+        
         /* Main Content Styling (Markdown Body) */
         .markdown-body h1 {
             color: var(--primary-color);
@@ -134,30 +158,31 @@
         .markdown-body h2 {
             color: var(--text-dark);
             font-weight: 700;
-            border-bottom: 1px dashed #E0E0E0;
+            border-bottom: 1px dashed var(--border-color);
             padding-bottom: 5px;
             margin-top: 30px;
             font-size: 1.8rem;
         }
         .markdown-body p, .markdown-body li {
+            color: var(--text-dark);
             line-height: 1.9;
             font-size: 1.1rem;
             margin-bottom: 15px;
         }
         .markdown-body pre {
-            background-color: #E9ECEF;
+            background-color: var(--code-bg);
             padding: 15px;
             border-radius: 8px;
             overflow-x: auto;
-            color: #333;
+            color: var(--text-dark);
         }
         .markdown-body blockquote {
-            border-left: 5px solid var(--accent-color); /* LTR border */
-            background-color: #F8F9FA;
+            border-left: 5px solid var(--accent-color); 
+            background-color: var(--welcome-bg);
             padding: 15px 20px;
             margin: 20px 0;
             font-style: italic;
-            color: #555;
+            color: var(--text-dark);
         }
         .markdown-body a {
             color: var(--primary-color);
@@ -173,10 +198,11 @@
         #welcome {
             text-align: center;
             padding: 80px 30px;
-            background-color: var(--secondary-color);
-            border: 1px solid #ddd;
+            background-color: var(--welcome-bg);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
             margin-top: 50px;
+            transition: background-color 0.3s, border-color 0.3s;
         }
         #welcome h1 {
             color: var(--primary-color);
@@ -184,8 +210,87 @@
             border-bottom: none;
         }
         #welcome p {
-            color: #6C757D;
+            color: var(--text-dark);
             font-size: 1.2rem;
+        }
+
+        /* Back to Top Button Styling */
+        #back-to-top {
+            display: none; /* Hidden by default */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        #back-to-top:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        /* Dark Mode Switch Styling */
+        #mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+        }
+        #mode-toggle span {
+            font-size: 1rem;
+            font-weight: 300;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 45px;
+            height: 25px;
+        }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 25px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 17px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--accent-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -194,8 +299,19 @@
 
     <div id="sidebar">
         <h2>Article Index</h2>
+        <!-- Search Input Field -->
+        <input type="text" id="search-input" placeholder="Search articles...">
         <ul id="article-list">
             </ul>
+        
+        <!-- Dark Mode Toggle -->
+        <div id="mode-toggle">
+            <span>Dark Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
     </div>
 
     <div id="content-area">
@@ -207,15 +323,118 @@
         <div id="article-view" class="markdown-body" style="display:none;">
             </div>
     </div>
+    
+    <!-- Back to Top Button -->
+    <button id="back-to-top" title="Go to top">
+        &#8593; <!-- Unicode for Up Arrow -->
+    </button>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
             const articleList = document.getElementById('article-list');
             const welcomeDiv = document.getElementById('welcome');
             const articleView = document.getElementById('article-view');
             const postsDir = './posts/'; 
+            const backToTopButton = document.getElementById('back-to-top');
+            const searchInput = document.getElementById('search-input');
+            const darkModeToggle = document.getElementById('dark-mode-toggle'); 
+            let articlesData = []; 
 
-            // Function to fetch the article list from index.json
+            // --- Dark Mode Logic ---
+            function applyTheme(isDark) {
+                if (isDark) {
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light');
+                }
+            }
+
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            // Check system preference if no local storage preference exists
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            let initialDark = false;
+            if (savedTheme === 'dark') {
+                initialDark = true;
+            } else if (savedTheme === null && prefersDark) {
+                initialDark = true;
+            }
+
+            applyTheme(initialDark);
+            darkModeToggle.checked = initialDark;
+
+            // Handle theme change via toggle
+            darkModeToggle.addEventListener('change', () => {
+                applyTheme(darkModeToggle.checked);
+            });
+
+
+            // --- Back to Top Logic ---
+            window.onscroll = function() {
+                // Show the button if scrolled more than 100px
+                if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                    backToTopButton.style.display = "block";
+                } else {
+                    backToTopButton.style.display = "none";
+                }
+            };
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // --- Article Filtering (Search) Logic ---
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                filterArticles(searchTerm);
+            });
+
+            function filterArticles(searchTerm) {
+                articleList.innerHTML = ''; 
+
+                if (articlesData.length === 0) {
+                    articleList.innerHTML = '<li>No articles to search.</li>';
+                    return;
+                }
+                
+                // Filter articles based on title
+                const filteredArticles = articlesData.filter(article => 
+                    article.title.toLowerCase().includes(searchTerm)
+                );
+
+                if (filteredArticles.length === 0) {
+                    articleList.innerHTML = '<li>No matching articles found.</li>';
+                } else {
+                    filteredArticles.forEach(renderArticleLink);
+                }
+            }
+
+
+            // --- Article Rendering Helper ---
+            function renderArticleLink(article) {
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = article.title; 
+                link.dataset.file = article.fileName;
+                
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loadArticle(article.fileName);
+                    // Reset bold state for all links
+                    document.querySelectorAll('#article-list a').forEach(a => a.style.fontWeight = 'normal');
+                    // Set current link to bold
+                    e.target.style.fontWeight = 'bold';
+                });
+
+                listItem.appendChild(link);
+                articleList.appendChild(listItem);
+            }
+
+            // --- Article Index Loading Logic ---
             async function fetchArticleIndex() {
                 try {
                     const response = await fetch('index.json'); 
@@ -224,35 +443,15 @@
                     }
                     const articleFiles = await response.json(); 
 
-                    // Filter out non-article entries (like updated_at timestamp)
-                    const articles = articleFiles.filter(item => item.fileName);
+                    // Store and render all valid articles
+                    articlesData = articleFiles.filter(item => item.fileName);
                     
-                    if (articles.length === 0) {
+                    if (articlesData.length === 0) {
                         articleList.innerHTML = '<li>No articles found.</li>';
                         return;
                     }
 
-                    articles.forEach(article => {
-                        const listItem = document.createElement('li');
-
-                        const link = document.createElement('a');
-                        link.href = '#';
-                        // Use the human-readable title generated by Python
-                        link.textContent = article.title; 
-                        link.dataset.file = article.fileName;
-                        
-                        link.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            loadArticle(article.fileName);
-                            // Remove bold styling from all links
-                            document.querySelectorAll('#article-list a').forEach(a => a.style.fontWeight = 'normal');
-                            // Set the current link to bold
-                            e.target.style.fontWeight = 'bold';
-                        });
-
-                        listItem.appendChild(link);
-                        articleList.appendChild(listItem);
-                    });
+                    articlesData.forEach(renderArticleLink);
 
                 } catch (error) {
                     articleList.innerHTML = '<li>Error loading articles. Check the Workflow status.</li>';
@@ -275,6 +474,7 @@
                     // Convert Markdown to HTML and display
                     articleView.innerHTML = marked.parse(markdownText);
                     
+                    // Scroll to the top of the content area
                     window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 } catch (error) {
@@ -283,6 +483,7 @@
                 }
             }
 
+            // Initial load of the article index
             fetchArticleIndex();
         });
     </script>
