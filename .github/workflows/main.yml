@@ -3,16 +3,16 @@ name: Generate Posts & Sitemaps
 on:
   push:
     branches:
-      - main # تأكد من أن هذا هو اسم الفرع الرئيسي لديك
+      - main 
     paths:
-      - 'encyclopedia.docx' # تشغيل عند تحديث الموسوعة
-      - 'scripts/**'       # تشغيل عند تحديث السكربتات
-  workflow_dispatch: # يسمح بتشغيله يدوياً
+      - 'encyclopedia.docx' 
+      - 'scripts/**'       
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: # **مهم جداً:** منح صلاحيات الكتابة لـ GITHUB_TOKEN لتجاوز مشاكل الـ Push
+    permissions: 
       contents: write
     steps:
       - name: Checkout repository
@@ -20,11 +20,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Force cleanup of old generated files # إزالة المجلدات القديمة قبل البناء الجديد
+      - name: Force cleanup of old generated files
         run: |
-          # هذه الخطوة مهمة لضمان أن Git يرى إنشاء مجلد posts كتغيير
           rm -rf posts/
           rm -f sitemap_*.xml sitemap_index.xml
+          rm -f index.json # إضافة تنظيف ملف JSON
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -33,7 +33,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # تثبيت المكتبات اللازمة
           python -m pip install --upgrade pip
           pip install python-docx python-slugify
 
@@ -44,7 +43,7 @@ jobs:
           # 1. تشغيل سكربت استخراج المقالات
           python scripts/extract_articles.py
 
-          # 2. تشغيل سكربت توليد خرائط الموقع
+          # 2. تشغيل سكربت توليد خرائط الموقع (والفهرس JSON)
           python scripts/generate_sitemaps.py
           
           # 3. إعداد Git للمزامنة والإرسال
@@ -55,12 +54,12 @@ jobs:
           git add posts/
           git add sitemap_*.xml
           git add sitemap_index.xml
-
+          git add index.json  # <--- إضافة هذا السطر الجديد
+          
           # 4. التحقق من وجود تغييرات لـ Commit
-          # إذا كان هناك فرق (تغيير)، قم بالـ commit والـ push
           if git status --porcelain | grep -q .; then
             echo "Changes detected. Committing and pushing..."
-            git commit -m "Auto-generate posts and sitemaps"
+            git commit -m "Auto-generate posts and sitemaps and index.json"
             git push
           else
             echo "No new changes. Skipping commit."
