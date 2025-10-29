@@ -126,19 +126,22 @@
             // دالة لجلب قائمة المقالات من ملف index.json
             async function fetchArticleIndex() {
                 try {
-                    // *** التعديل: جلب ملف index.json بدلاً من محاولة قراءة المجلد ***
+                    // جلب ملف index.json بدلاً من محاولة قراءة المجلد
                     const response = await fetch('index.json'); 
                     if (!response.ok) {
-                        throw new Error("Failed to fetch index.json. Did the workflow run?");
+                        throw new Error(`Failed to fetch index.json. Status: ${response.status}`);
                     }
-                    const articleFiles = await response.json(); // قراءة الملف كـ JSON
+                    const articleFiles = await response.json(); 
+
+                    // تصفية أي عناصر ليست مقالات (مثل عنصر updated_at)
+                    const articles = articleFiles.filter(item => item.fileName);
                     
-                    if (articleFiles.length === 0) {
+                    if (articles.length === 0) {
                         articleList.innerHTML = '<li>لا توجد مقالات للعرض. تأكد من أن ملف index.json غير فارغ.</li>';
                         return;
                     }
 
-                    articleFiles.forEach(article => {
+                    articles.forEach(article => {
                         const listItem = document.createElement('li');
 
                         const link = document.createElement('a');
