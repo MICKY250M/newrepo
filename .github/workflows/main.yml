@@ -22,9 +22,10 @@ jobs:
           
       - name: Force cleanup of old generated files
         run: |
+          # تنظيف الملفات المولدة سابقاً قبل البدء
           rm -rf posts/
           rm -f sitemap_*.xml sitemap_index.xml
-          rm -f index.json # إضافة تنظيف ملف JSON
+          rm -f index.json 
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -50,16 +51,16 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           
-          # إضافة جميع الملفات والمجلدات المُنشأة حديثاً
+          # إضافة جميع الملفات المولدة حديثاً (المجلد، خرائط الموقع، ملف الفهرس)
           git add posts/
           git add sitemap_*.xml
           git add sitemap_index.xml
-          git add index.json  # <--- إضافة هذا السطر الجديد
+          git add index.json  # <--- تأكدنا من وجود هذا السطر 
           
-          # 4. التحقق من وجود تغييرات لـ Commit
+          # 4. التحقق من وجود تغييرات لـ Commit (لتجنب Push فارغ)
           if git status --porcelain | grep -q .; then
             echo "Changes detected. Committing and pushing..."
-            git commit -m "Auto-generate posts and sitemaps and index.json"
+            git commit -m "Auto-generate posts, sitemaps, and index.json"
             git push
           else
             echo "No new changes. Skipping commit."
