@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Encyclopedia Blog - Home</title>
-    <!-- Include Google Fonts: 'Inter' for a clean, modern English font -->
+    
+    <title>The Automated Encyclopedia | Articles generated from Word Document</title>
+    <meta name="description" content="A comprehensive collection of automated articles and encyclopedic entries. Content is managed efficiently via an an automatic GitHub Workflow from a single Word document.">
+    <meta name="keywords" content="encyclopedia, automated blog, github pages, markdown, technical articles, general knowledge">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
@@ -180,28 +182,23 @@
             font-size: 1.2rem;
         }
     </style>
-    <!-- Include marked.js library for Markdown to HTML conversion -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-    <!-- Sidebar and Article List -->
     <div id="sidebar">
         <h2>Article Index</h2>
         <ul id="article-list">
-            <!-- This list will be populated by JavaScript -->
-        </ul>
+            </ul>
     </div>
 
-    <!-- Content Display Area -->
     <div id="content-area">
         <div id="welcome">
             <h1>Welcome to the Automated Blog</h1>
             <p>This blog is fully generated from a Word document. Select any article from the sidebar to start reading.</p>
         </div>
         <div id="article-view" class="markdown-body" style="display:none;">
-            <!-- Article content will be displayed here -->
-        </div>
+            </div>
     </div>
 
     <script>
